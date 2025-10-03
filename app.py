@@ -9,61 +9,64 @@ html = """
   <meta charset="UTF-8">
   <title>Kalkulator Flask</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    function appendValue(val) {
+      document.getElementById("display").value += val;
+    }
+    function clearDisplay() {
+      document.getElementById("display").value = "";
+    }
+    function calculate() {
+      try {
+        let result = eval(document.getElementById("display").value);
+        document.getElementById("display").value = result;
+      } catch {
+        document.getElementById("display").value = "Error";
+      }
+    }
+  </script>
 </head>
-<body class="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 text-white flex items-center justify-center min-h-screen">
-  <div class="bg-gray-800 p-6 rounded-2xl shadow-xl w-96 border border-gray-700">
-    <h1 class="text-3xl font-bold mb-6 text-center text-blue-400">🧮 Kalkulator</h1>
+<body class="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center min-h-screen text-white">
+  <div class="bg-gray-800 p-6 rounded-2xl shadow-2xl w-80">
+    <h1 class="text-2xl font-bold mb-4 text-center text-blue-400">🧮 Kalkulator</h1>
+    
+    <!-- Display -->
+    <input id="display" readonly
+           class="w-full text-right px-4 py-3 mb-4 rounded-lg text-black text-2xl font-mono shadow-inner bg-gray-200" />
 
-    <form method="POST" action="/" class="space-y-4">
-      <input type="number" step="any" name="num1" placeholder="Masukkan angka pertama"
-             class="w-full px-4 py-2 rounded-lg text-black focus:ring-2 focus:ring-blue-500" required>
+    <!-- Buttons -->
+    <div class="grid grid-cols-4 gap-3">
+      <button onclick="clearDisplay()" class="col-span-2 bg-red-500 hover:bg-red-600 py-3 rounded-xl font-bold">C</button>
+      <button onclick="appendValue('%')" class="bg-gray-600 hover:bg-gray-700 py-3 rounded-xl font-bold">%</button>
+      <button onclick="appendValue('/')" class="bg-blue-500 hover:bg-blue-600 py-3 rounded-xl font-bold">÷</button>
 
-      <input type="number" step="any" name="num2" placeholder="Masukkan angka kedua"
-             class="w-full px-4 py-2 rounded-lg text-black focus:ring-2 focus:ring-blue-500" required>
+      <button onclick="appendValue('7')" class="bg-gray-700 hover:bg-gray-600 py-3 rounded-xl font-bold">7</button>
+      <button onclick="appendValue('8')" class="bg-gray-700 hover:bg-gray-600 py-3 rounded-xl font-bold">8</button>
+      <button onclick="appendValue('9')" class="bg-gray-700 hover:bg-gray-600 py-3 rounded-xl font-bold">9</button>
+      <button onclick="appendValue('*')" class="bg-blue-500 hover:bg-blue-600 py-3 rounded-xl font-bold">×</button>
 
-      <select name="operation" class="w-full px-4 py-2 rounded-lg text-black focus:ring-2 focus:ring-blue-500">
-        <option value="add">➕ Tambah</option>
-        <option value="subtract">➖ Kurang</option>
-        <option value="multiply">✖ Kali</option>
-        <option value="divide">➗ Bagi</option>
-      </select>
+      <button onclick="appendValue('4')" class="bg-gray-700 hover:bg-gray-600 py-3 rounded-xl font-bold">4</button>
+      <button onclick="appendValue('5')" class="bg-gray-700 hover:bg-gray-600 py-3 rounded-xl font-bold">5</button>
+      <button onclick="appendValue('6')" class="bg-gray-700 hover:bg-gray-600 py-3 rounded-xl font-bold">6</button>
+      <button onclick="appendValue('-')" class="bg-blue-500 hover:bg-blue-600 py-3 rounded-xl font-bold">−</button>
 
-      <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 py-2 rounded-lg font-semibold shadow-md transition">
-        Hitung
-      </button>
-    </form>
+      <button onclick="appendValue('1')" class="bg-gray-700 hover:bg-gray-600 py-3 rounded-xl font-bold">1</button>
+      <button onclick="appendValue('2')" class="bg-gray-700 hover:bg-gray-600 py-3 rounded-xl font-bold">2</button>
+      <button onclick="appendValue('3')" class="bg-gray-700 hover:bg-gray-600 py-3 rounded-xl font-bold">3</button>
+      <button onclick="appendValue('+')" class="bg-blue-500 hover:bg-blue-600 py-3 rounded-xl font-bold">+</button>
 
-    {% if result is not none %}
-    <div class="mt-6 text-center bg-gray-700 py-3 rounded-lg">
-      <h2 class="text-xl font-semibold text-green-400">Hasil: {{ result }}</h2>
+      <button onclick="appendValue('0')" class="col-span-2 bg-gray-700 hover:bg-gray-600 py-3 rounded-xl font-bold">0</button>
+      <button onclick="appendValue('.')" class="bg-gray-700 hover:bg-gray-600 py-3 rounded-xl font-bold">.</button>
+      <button onclick="calculate()" class="bg-green-500 hover:bg-green-600 py-3 rounded-xl font-bold">=</button>
     </div>
-    {% endif %}
   </div>
 </body>
 </html>
 """
 
-@app.route("/", methods=["GET", "POST"])
+@app.route("/")
 def index():
-    result = None
-    if request.method == "POST":
-        try:
-            num1 = float(request.form["num1"])
-            num2 = float(request.form["num2"])
-            operation = request.form["operation"]
-
-            if operation == "add":
-                result = num1 + num2
-            elif operation == "subtract":
-                result = num1 - num2
-            elif operation == "multiply":
-                result = num1 * num2
-            elif operation == "divide":
-                result = num1 / num2 if num2 != 0 else "Error: Bagi 0"
-        except Exception as e:
-            result = f"Error: {str(e)}"
-
-    return render_template_string(html, result=result)
+    return render_template_string(html)
 
 if __name__ == "__main__":
     app.run(debug=True)
